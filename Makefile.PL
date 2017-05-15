@@ -5,6 +5,8 @@
 ################################################################################
 #
 #  Version 3.x, Copyright (C) 2004-2013, Marcus Holland-Moritz.
+#               Copyright (C) 2018-2019, The perl5 porters
+#               Copyright (C) 2015-2019, Reini Urban.
 #  Version 2.x, Copyright (C) 2001, Paul Marquess.
 #  Version 1.x, Copyright (C) 1999, Kenneth Albanowski.
 #
@@ -23,6 +25,7 @@ use vars '%opt';  # needs to be global, and we can't use 'our'
 unless ($ENV{'PERL_CORE'}) {
   $ENV{'PERL_CORE'} = 1 if grep { $_ eq 'PERL_CORE=1' } @ARGV;
 }
+my $PERL_CORE = $ENV{'PERL_CORE'} ? 'PERL_CORE=1' : '';
 
 @ARGV = map { /^--with-(apicheck)$/ && ++$opt{$1} ? () : $_ } @ARGV;
 
@@ -80,7 +83,7 @@ sub configure
   open FH, '<PPPort_pm.PL' or die "cannot open PPPort_pm.PL for reading: $!";
   my $version;
   while (my $line = <FH>) {
-    ($version) = $line =~ /^\$VERSION = '([\d.]+)';$/ and last;
+    ($version) = $line =~ /^\$VERSION = '([\d._]+)';$/ and last;
   };
   die 'failed to extract $VERSION from PPPort_pm.PL' if not $version;
   close FH;
@@ -114,9 +117,17 @@ sub configure
   };
 }
 
-sub MY::postamble
+package MY;
+
+sub depend {
+  "
+t/warn.t : mktests.PL regen_tests
+RealPPPort.c : ppport.h
+"
+}
+
+sub postamble
 {
-  package MY;
   my $post = shift->SUPER::postamble(@_);
   $post .= <<'POSTAMBLE';
 
@@ -124,16 +135,16 @@ purge_all: realclean
 	@$(RM_F) PPPort.pm t/*.t
 
 regen_pm:
-	$(PERL) -I$(INST_ARCHLIB) -I$(INST_LIB) -I$(PERL_ARCHLIB) -I$(PERL_LIB) PPPort_pm.PL
+	$(PERL) -I$(INST_ARCHLIB) -I$(INST_LIB) -I$(PERL_ARCHLIB) -I$(PERL_LIB) PPPort_pm.PL PERL_CORE=$(PERL_CORE)
 
 regen_xs:
-	$(PERL) -I$(INST_ARCHLIB) -I$(INST_LIB) -I$(PERL_ARCHLIB) -I$(PERL_LIB) RealPPPort_xs.PL
+	$(PERL) -I$(INST_ARCHLIB) -I$(INST_LIB) -I$(PERL_ARCHLIB) -I$(PERL_LIB) RealPPPort_xs.PL PERL_CORE=$(PERL_CORE)
 
 regen_tests:
-	$(PERL) -I$(INST_ARCHLIB) -I$(INST_LIB) -I$(PERL_ARCHLIB) -I$(PERL_LIB) mktests.PL
+	$(PERL) -I$(INST_ARCHLIB) -I$(INST_LIB) -I$(PERL_ARCHLIB) -I$(PERL_LIB) mktests.PL PERL_CORE=$(PERL_CORE)
 
 regen_h:
-	$(PERL) -I$(INST_ARCHLIB) -I$(INST_LIB) -I$(PERL_ARCHLIB) -I$(PERL_LIB) ppport_h.PL
+	$(PERL) -I$(INST_ARCHLIB) -I$(INST_LIB) -I$(PERL_ARCHLIB) -I$(PERL_LIB) ppport_h.PL PERL_CORE=$(PERL_CORE)
 
 regen: regen_pm regen_xs regen_tests regen_h
 
@@ -141,9 +152,8 @@ POSTAMBLE
   return $post;
 }
 
-sub MY::dist_core
+sub dist_core
 {
-  package MY;
   my $dist = shift->SUPER::dist_core(@_);
 
   my $updated = '';
@@ -160,9 +170,8 @@ sub MY::dist_core
 }
 
 
-sub MY::c_o
+sub c_o
 {
-  package MY;
   my $co = shift->SUPER::c_o(@_);
 
   if ($::opt{'apicheck'} && $co !~ /^\.c\.i:/m) {

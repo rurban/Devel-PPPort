@@ -12,6 +12,7 @@ XPUSHmortal                    # E
 ZeroD                          # E
 dUNDERBAR                      # E
 dXCPT                          # E
+find_rundefsvoffset            # U
 gv_fetchpvn_flags              # U
 gv_fetchsv                     # U
 mPUSHi                         # U

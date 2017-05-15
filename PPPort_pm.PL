@@ -5,7 +5,8 @@
 ################################################################################
 #
 #  Version 3.x, Copyright (C) 2004-2013, Marcus Holland-Moritz.
-#               Copyright (C) 2018, The perl5 porters
+#               Copyright (C) 2018-2019, The perl5 porters.
+#               Copyright (C) 2015-2019, Reini Urban.
 #  Version 2.x, Copyright (C) 2001, Paul Marquess.
 #  Version 1.x, Copyright (C) 1999, Kenneth Albanowski.
 #
@@ -122,7 +123,21 @@ $data =~ s{^__UNSUPPORTED_API__(\s*?)^}
 
 $data =~ s{__MIN_PERL__}{5.003}g;
 $data =~ s{__MAX_PERL__}{5.30}g;
+my $SILENT;
 
+if (@ARGV and $ARGV[0] =~ /--quiet/) {
+  $SILENT++;
+  shift;
+}
+elsif (defined $ENV{MAKEFLAGS}
+       and $ENV{MAKEFLAGS} =~ /\b(s|silent|quiet)\b/) {
+  $SILENT++;
+}
+elsif ($ENV{PERL_CORE}) {
+  $SILENT++;
+}
+
+# backcompat
 open FH, ">PPPort.pm" or die "PPPort.pm: $!\n";
 print FH $data;
 close FH;
@@ -133,7 +148,7 @@ sub include
 {
   my($file, $opt) = @_;
 
-  print "including $file\n";
+  print "including $file\n" unless $SILENT;
 
   my $data = parse_partspec("$INCLUDE/$file");
 
@@ -551,7 +566,7 @@ package Devel::PPPort;
 use strict;
 use vars qw($VERSION $data);
 
-$VERSION = '3.52';
+$VERSION = '3.52_04';
 
 sub _init_data
 {

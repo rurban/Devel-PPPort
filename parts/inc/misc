@@ -561,6 +561,19 @@ XS(XS_Devel__PPPort_dAXMARK)
   XSRETURN(1);
 }
 
+=xsinit
+
+#define NEED_SvRX
+
+int returnint(int x)
+#if !defined(PERL_MICRO) && defined __GNUC__ && !defined(__INTEL_COMPILER)
+# if __GNUC__ == 3 && __GNUC_MINOR__ >= 4 || __GNUC__ > 3 /* 3.4 -> */
+  __attribute__((warn_unused_result))
+# endif
+#endif
+  ;
+int returnint(int x) { return x * x; }
+
 =xsboot
 
 {
@@ -644,9 +657,16 @@ OpSIBLING_tests()
 			failures++; warn("Op should have had a sib after maybesibset");
 		}
 
+		OpMAYBESIB_set(x, (OP*)NULL, NULL);
+
+		if (OpHAS_SIBLING(x) || OpSIBLING(x)) {
+			failures++; warn("OpMAYBESIB_set with NULL failed?");
+		}
+
                 op_free(lastkid);
                 op_free(middlekid);
                 op_free(x);
+
 		RETVAL = failures;
 	OUTPUT:
 		RETVAL
@@ -843,6 +863,14 @@ check_HeUTF8(utf8_key)
 
 
 #endif
+
+void
+check_unused_return(x)
+        int x;
+        PPCODE:
+                PERL_UNUSED_ARG(x);
+                PERL_UNUSED_RESULT(returnint(3));
+                mXPUSHp("Yay", 3);
 
 void
 check_c_array()
@@ -1264,6 +1292,9 @@ if ("$]" >= 5.009000) {
   ok(1, 1);
   ok(1, 1);
 }
+
+# Lame test, just make sure this still works
+ok(&Devel::PPPort::check_unused_return(3), "Yay");
 
 @r = &Devel::PPPort::check_c_array();
 ok($r[0], 4);

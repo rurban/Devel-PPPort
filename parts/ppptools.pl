@@ -311,7 +311,7 @@ sub parse_embed
           # Skip entries marked as deprecated or unstable, or non-name ones, like
           #    PL_parser-E<gt>linestr
           # which documents a struct entry rather than a function
-          next if $flags =~ /[DxN]/;
+          next if $flags =~ /[DM]/;
           if ($name =~ /^[^\W\d]\w*$/) {
             for (@args) {
               $_ = [trim_arg($_)];

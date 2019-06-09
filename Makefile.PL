@@ -54,7 +54,7 @@ sub configure
   my @moreopts;
 
   if (eval $ExtUtils::MakeMaker::VERSION >= 6) {
-    push @moreopts, AUTHOR => 'Marcus Holland-Moritz <mhx@cpan.org>';
+    push @moreopts, AUTHOR => 'Reini Urban <rurban@cpan.org>';
     push @moreopts, ABSTRACT_FROM => 'PPPort_pm.PL';
   }
 
@@ -88,13 +88,8 @@ sub configure
   die 'failed to extract $VERSION from PPPort_pm.PL' if not $version;
   close FH;
 
-  return {
-    C        => \@C_FILES,
-    XS       => { 'RealPPPort.xs' => 'RealPPPort.c' },
-    PL_FILES => \%PL_FILES,
-    depend   => \%depend,
-    clean    => { FILES => "@clean" },
-    META_MERGE    => {
+  if (eval $ExtUtils::MakeMaker::VERSION > 6.45) {
+    push @moreopts, META_MERGE => {
       'meta-spec' => { version => 2 },
       provides => {
         'Devel::PPPort' => {
@@ -104,15 +99,23 @@ sub configure
       },
       resources => {
         bugtracker => {
-          web => 'https://rt.perl.org/rt3/',
+          web => 'https://github.com/perl11/cperl/issues/',
         },
         repository => {
           type => 'git',
-          url  => 'git://perl5.git.perl.org/perl.git',
-          web  => 'https://perl5.git.perl.org/perl.git',
+          url  => 'git://github.com/rurban/Devel-PPPort',
+          web  => 'https://github.com/rurban/Devel-PPPort',
         },
       },
-    },
+    };
+  }
+
+  return {
+    C        => \@C_FILES,
+    XS       => { 'RealPPPort.xs' => 'RealPPPort.c' },
+    PL_FILES => \%PL_FILES,
+    depend   => \%depend,
+    clean    => { FILES => "@clean" },
     @moreopts,
   };
 }

@@ -162,10 +162,10 @@ Ams||dXCPT
 Ams||dXSARGS
 Ams||dXSI32
 Ams||ENTER
-Ams||ENTER_with_name(name)
+Ams||ENTER_with_name|"literal string" name
 Ams||FREETMPS
 Ams||LEAVE
-Ams||LEAVE_with_name(name)
+Ams||LEAVE_with_name|"literal string" name
 Ams||MULTICALL
 Ams||POP_MULTICALL
 Ams||PUSH_MULTICALL
@@ -458,13 +458,13 @@ Amx|SV*|newSVpadname|PADNAME *pn
 Amx|SV **|PadARRAY|PAD pad
 Amx|SV *|PadnameSV|PADNAME pn
 Amx|U32|PadlistREFCNT|PADLIST padlist
-AmxU|char *|PL_parser-E<gt>bufend
-AmxU|char *|PL_parser-E<gt>bufptr
-AmxU|char *|PL_parser-E<gt>linestart
+AmxU|char *|PL_parser->bufend
+AmxU|char *|PL_parser->bufptr
+AmxU|char *|PL_parser->linestart
+AmxU|SV *|PL_parser->linestr
 AmxU|PADNAMELIST *|PL_comppad_name
 AmxU|PAD *|PL_comppad
 AmxU|SV **|PL_curpad
-AmxU|SV *|PL_parser-E<gt>linestr
 Amx|void|BhkDISABLE|BHK *hk|which
 Amx|void|BhkENABLE|BHK *hk|which
 Amx|void|BhkENTRY_set|BHK *hk|which|void *ptr

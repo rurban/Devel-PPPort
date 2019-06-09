@@ -1,5 +1,24 @@
 Revision history for Devel-PPPort
 
+ 3.52_04 - 2019-06-09
+
+   * Merge with cperl improvements:
+     cperl croak_no_modify adds now the SV to the message.
+     support make --silent.
+     support devel VERSION with _
+     fix deps
+     sync embed.fnc with cperl core, with #ifdef USE_CPERL
+     sync parts with 5.30 updates
+   * Revert "Use latest blead embed.fnc"
+     It changed the meaning of several flags (n=>T, s=>S,M=>x,...) just for
+     some apidocs troubles which are easily solved otherwise.
+     It breaks backcompat, and breaks the equality of core embed.fnc.
+     perl5.30 also rejected it
+   * Add croak_no_modify_sv
+   * make regen is now in two modes: cperl or perl5 (as in cperl-core embed_lib)
+   * Remove implemented TODOs
+   * Fix for older EUMM <6.46 which has no META_MERGE
+
  3.52 - 2019-05-14
 
    * fix utf8_to_uvchr_buf retval in 5.30

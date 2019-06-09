@@ -178,8 +178,8 @@ before_install:
 install:
   - perl Makefile.PL
   - make regen
-# ensure allfiles are git up-to-date [fail if make regen alters some files]
-  - git diff --quiet
+  # ensure all files are git up-to-date [fail if make regen alters some files]
+  - perl -e'if ($] > 5.008) { `git diff` && exit 1 }'
 
 script:
   - perl Makefile.PL

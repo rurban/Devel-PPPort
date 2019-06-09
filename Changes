@@ -1,5 +1,19 @@
 Revision history for Devel-PPPort
 
+ 3.53_04 - 2019-06-10
+
+   * Fixup cperl regressions from the previous release:
+     - re-add cperl parts/inc/variables
+     - re-add Hv*NAME* macros
+     - re-add __UNDEFINED__ section in HACKING
+     - re-add CPERL version macro
+     - re-add gv_fetchpvn test
+   * PL_in_sub only with v5.29.0c
+   * Fixup t/variables.t plan => no_plan, fallback => NN for 5.6.0/5.8.0:
+     add done_testing automatically, avoid Test.pm
+   * Skip 3 failing 5.6.0 tests in ppphtest
+   * fix @INC for PERL_CORE
+
  3.52_04 - 2019-06-09
 
    * Merge with cperl improvements:

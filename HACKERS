@@ -232,6 +232,13 @@ instead of
   #  define macro    some definition
   #endif
 
+If you use this, you don't have to list C<"macro"> in the C<=provides> section.
+But that section must contain a single line
+
+  __UNDEFINED__
+
+which acts as a stand-in for all the macros defined through its use.
+
 The macro can have optional arguments and the definition can even
 span multiple lines, like in
 
@@ -262,6 +269,14 @@ statements. It is also possible to combine this with other statements:
   #elif { VERSION < 5.004_63 } && { VERSION != 5.004_05 }
     /* b */
   #endif
+
+There's also a CPERL shortcut. Instead of
+
+  #if { VERSION >= 5.027 } && defined(USE_CPERL)
+
+you can write
+
+  #if { CPERL && VERSION >= 5.027 }
 
 This not only works in the C<=implementation> section, but also in
 the C<=xsubs>, C<=xsinit>, C<=xsmisc>, C<=xshead> and C<=xsboot> sections.

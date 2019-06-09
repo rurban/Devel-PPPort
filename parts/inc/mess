@@ -24,6 +24,7 @@ croak_nocontext
 
 croak_no_modify
 Perl_croak_no_modify
+croak_no_modify_sv
 
 croak_memory_wrap
 croak_xs_usage
@@ -191,6 +192,12 @@ mess_sv(pTHX_ SV *basemsg, bool consume)
 #define Perl_croak_no_modify() croak_no_modify()
 #endif
 
+#ifndef croak_no_modify_sv
+#define croak_no_modify_sv(sv) \
+    croak_nocontext("%s %s at %s:%d", PL_no_modify, SvPEEK(sv), __FILE__, __LINE__)
+#define Perl_croak_no_modify_sv(sv) croak_no_modify_sv(sv, __FILE__, __LINE__)
+#endif
+
 #ifndef croak_memory_wrap
 #if { VERSION >= 5.9.2 } || ( { VERSION >= 5.8.6 } && { VERSION < 5.9.0 } )
 #  define croak_memory_wrap() croak_nocontext("%s", PL_memory_wrap)
@@ -297,6 +304,12 @@ CODE:
     croak_no_modify();
 
 void
+croak_no_modify_sv(sv)
+    SV *sv
+CODE:
+    croak_no_modify_sv(sv);
+
+void
 croak_memory_wrap()
 CODE:
     croak_memory_wrap();
@@ -307,7 +320,7 @@ croak_xs_usage(params)
 CODE:
     croak_xs_usage(cv, params);
 
-=tests plan => 102
+=tests plan => 104
 
 BEGIN { if ($] lt '5.006') { $^W = 0; } }
 
@@ -559,6 +572,9 @@ if ($] ge '5.007003' or ($] ge '5.006001' and $] lt '5.007')) {
 
 ok !defined eval { Devel::PPPort::croak_no_modify() };
 ok($@, qr/^Modification of a read-only value attempted /, "croak_no_modify");
+
+ok !defined eval { Devel::PPPort::croak_no_modify_sv($]) };
+ok($@, qr/^Modification of a read-only value attempted /, "croak_no_modify_sv");
 
 ok !defined eval { Devel::PPPort::croak_memory_wrap() };
 ok($@, qr/^panic: memory wrap at $0 line /, "croak_memory_wrap");

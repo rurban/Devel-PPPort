@@ -1200,7 +1200,7 @@ av_top_index(av)
         OUTPUT:
                 RETVAL
 
-=tests plan => 128
+=tests plan => 129
 
 use vars qw($my_sv @my_av %my_hv);
 

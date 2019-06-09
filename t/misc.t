@@ -30,9 +30,9 @@ BEGIN {
     require 'testutil.pl' if $@;
   }
 
-  if (128) {
+  if (129) {
     load();
-    plan(tests => 128);
+    plan(tests => 129);
   }
 }
 
@@ -138,6 +138,9 @@ if ("$]" >= 5.009000) {
   ok(1, 1);
   ok(1, 1);
 }
+
+# Lame test, just make sure this still works
+ok(&Devel::PPPort::check_unused_return(3), "Yay");
 
 @r = &Devel::PPPort::check_c_array();
 ok($r[0], 4);

@@ -15,6 +15,20 @@
 
 use strict;
 $^W = 1;
+my $SILENT;
+
+if (@ARGV and $ARGV[0] =~ /--quiet/) {
+  $SILENT++;
+  shift;
+}
+elsif (defined $ENV{MAKEFLAGS}
+       and $ENV{MAKEFLAGS} =~ /\b(s|silent|quiet)\b/) {
+  $SILENT++;
+}
+elsif ($ENV{PERL_CORE}) {
+  $SILENT++;
+}
+
 require "./parts/ppptools.pl";
 
 my %SECTION = (
@@ -44,8 +58,8 @@ for $file (all_files_in_dir('parts/inc')) {
   my $msg = 0;
   for $sec (keys %SECTION) {
     if (exists $spec->{$sec}) {
-      unless ($ENV{PERL_CORE}) {
-        $msg++ or print "adding XS code from $file\n";
+      if (!$msg++ and !$SILENT) {
+        print "adding XS code from $file\n";
       }
       if (exists $SECTION{$sec}{header}) {
         my $header = $SECTION{$sec}{header};

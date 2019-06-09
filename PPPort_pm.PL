@@ -17,6 +17,21 @@
 
 use strict;
 $^W = 1;
+
+my $SILENT;
+
+if (@ARGV and $ARGV[0] =~ /--quiet/) {
+  $SILENT++;
+  shift;
+}
+elsif (defined $ENV{MAKEFLAGS}
+       and $ENV{MAKEFLAGS} =~ /\b(s|silent|quiet)\b/) {
+  $SILENT++;
+}
+elsif ($ENV{PERL_CORE}) {
+  $SILENT++;
+}
+
 require "./parts/ppptools.pl";
 
 my $INCLUDE = 'parts/inc';
@@ -123,19 +138,6 @@ $data =~ s{^__UNSUPPORTED_API__(\s*?)^}
 
 $data =~ s{__MIN_PERL__}{5.003}g;
 $data =~ s{__MAX_PERL__}{5.30}g;
-my $SILENT;
-
-if (@ARGV and $ARGV[0] =~ /--quiet/) {
-  $SILENT++;
-  shift;
-}
-elsif (defined $ENV{MAKEFLAGS}
-       and $ENV{MAKEFLAGS} =~ /\b(s|silent|quiet)\b/) {
-  $SILENT++;
-}
-elsif ($ENV{PERL_CORE}) {
-  $SILENT++;
-}
 
 # backcompat
 open FH, ">PPPort.pm" or die "PPPort.pm: $!\n";
